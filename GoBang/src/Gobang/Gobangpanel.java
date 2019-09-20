@@ -29,6 +29,10 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class Gobangpanel extends JPanel {
 
+	
+	//data
+	private Data canjudata =new Data();
+	
 	private final int EMPTY = 0;
 	// //1代表黑子，2代表白子
 	private final int BLACK = 1;
@@ -41,11 +45,19 @@ public class Gobangpanel extends JPanel {
 	private final boolean renrenMode = false;
 	private final boolean renjimode = true;
 	private boolean mode = false;
+	private int canjumode =0;  //残局模式
 
 	// 智能
-
 	private final boolean guzhimode = false;
-
+	
+	//搜索深度
+	private int depth=1;
+	
+	//
+	
+	//棋盘的状态
+	private boolean WIN=false;
+	
 	public void setCount(int count) {
 		this.count = count;
 	}
@@ -160,7 +172,6 @@ public class Gobangpanel extends JPanel {
 		for (int i = 0; i < Gobangutil.LINE_COUNT; i++) {
 			for (int j = 0; j < Gobangutil.LINE_COUNT; j++) {
 				if (chess1[i][j] != null && chess1[i][j].getOrdernum() == count - 1) {
-					System.out.println();
 					return chess1[i][j];
 
 				}
@@ -282,8 +293,7 @@ public class Gobangpanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			super.mouseClicked(e);
-			if (isGamestart) {
-
+			if (isGamestart&&!WIN) {
 				if (mode == renrenMode) {
 					x = (e.getX() - Gobangutil.OFFSET / 2) / Gobangutil.INTERVAL;
 					y = (e.getY() - Gobangutil.OFFSET / 2) / Gobangutil.INTERVAL;
@@ -311,17 +321,35 @@ public class Gobangpanel extends JPanel {
 							chess1[curx][cury].setPlayer(WHITE);
 							count++;
 						}
+						Boolean iswin = checkwin(x, y, WHITE);
+						if (iswin) {
+							repaint();
+							JOptionPane.showMessageDialog(Gobangpanel.this,
+									((currentplayer == WHITE) ? "black" : "white") + "  win");
+						}
 						// 机器下棋
 						if (zhinengmode == guzhimode) {// 估值下棋
 							List<chess> sortlist = sortchess(BLACK, chess1);
-							chess temp = sortlist.get(sortlist.size()-1);
+							chess temp = sortlist.get(sortlist.size()-10);
+							for(int i=0;i<sortlist.size();i++)
+							System.out.println(sortlist.get(i));
 							x = temp.getX();
 							y = temp.getY();
 							chess1[x][y].setPlayer(BLACK);
 							chess1[x][y].setOrdernum(count);
 							count++;
+							currentplayer=3-currentplayer;
+							Boolean iswin1 = checkwin(x, y, BLACK);
+							if (iswin1) {
+								repaint();
+								JOptionPane.showMessageDialog(Gobangpanel.this,
+										((currentplayer == WHITE) ? "black" : "white") + "  win");
+							}
+							
 						} else if (zhinengmode == guzhitreemode) {// 估值加搜索树
-						}
+							
+							
+					   	}
 
 					}
 				}
@@ -329,6 +357,45 @@ public class Gobangpanel extends JPanel {
 			} else {
 				JOptionPane.showMessageDialog(Gobangpanel.this, "请开始新游戏");
 			}
+		}
+
+		protected chess getValueByTree1(int d, int player, chess[][] chessBeans) {
+			   
+			   chess[][] tmp = clone(chessBeans);
+			   
+			   List<chess> orderList = sortchess(player, tmp);
+			   
+			   if(d==depth) {
+			    //达到搜索指定深度，结束。返回当前步骤中。获取到的估值最高的点。
+			    return orderList.get(0);
+			   }
+			   //遍历当前棋盘上所有空余的位置（遍历getSortList）
+			   for(int i=0; i<orderList.size(); i++) {
+				   chess bean = orderList.get(i);
+			    
+			    if(bean.getSum()>Level.ALIVE_4.score) {
+			     //找到目标
+			     return bean;
+			    } else {
+			     //这个步骤是模拟下棋。不能再真正的棋盘上进行落子
+			     chessBeans[bean.getX()][bean.getY()].setPlayer(player);
+			     return getValueByTree1(d+1, 3-player, tmp);
+			    }
+			   }
+			   return null;
+			  }
+		
+		
+		
+		
+		
+		
+		private chess[][] clone(chess[][] chessBeans) {
+			chess[][] temp=new chess[Gobangutil.LINE_COUNT][Gobangutil.LINE_COUNT];
+			for(int i=0;i<Gobangutil.LINE_COUNT;i++)
+				for(int j=0;j<Gobangutil.LINE_COUNT;j++)
+					temp[i][j]=chessBeans[i][j];
+			return temp;
 		}
 
 		private List<chess> sortchess(int player, chess[][] chesstmp) {
@@ -341,7 +408,7 @@ public class Gobangpanel extends JPanel {
 						chesstmp[i][j].setAttack(a);
 						chesstmp[i][j].setOffence(o);
 						chesstmp[i][j].setSum(a + o);
-						templist.add(chesstmp[i][j]);
+						templist.add(chesstmp[i][j]);   
 					}
 				}
 			}
@@ -351,20 +418,21 @@ public class Gobangpanel extends JPanel {
 
 		private int getValue(chess chess, chess[][] chesstmp, int player) {
 			// 横
-			String left1 = getStrSeq(chess, 1, 0, chesstmp);
-			String right1 = getStrSeq(chess, -1, 0, chesstmp);
+			String left1 = getStrSeq(chess, -1, 0, chesstmp);
+			String right1 = getStrSeq(chess, 1, 0, chesstmp);
 			String s1 = left1 + player + right1;
+			System.out.println(s1);
 			// 竖
-			String left2 = getStrSeq(chess, 0, 1, chesstmp);
-			String right2 = getStrSeq(chess, 0, -1, chesstmp);
+			String left2 = getStrSeq(chess, 0, -1, chesstmp);
+			String right2 = getStrSeq(chess, 0, 1, chesstmp);
 			String s2 = left2 + player + right2;
 			// 撇
-			String left3 = getStrSeq(chess, 1, 1, chesstmp);
-			String right3 = getStrSeq(chess, -1, -1, chesstmp);
+			String left3 = getStrSeq(chess, -1, -1, chesstmp);
+			String right3 = getStrSeq(chess, 1, 1, chesstmp);
 			String s3 = left3 + player + right3;
 			// 捺
-			String left4 = getStrSeq(chess, 1, -1, chesstmp);
-			String right4 = getStrSeq(chess, -1, 1, chesstmp);
+			String left4 = getStrSeq(chess, -1, 1, chesstmp);
+			String right4 = getStrSeq(chess, 1, -1, chesstmp);
 			String s4 = left4 + player + right4;
 			Level l1 = getlevel(s1, player);
 			Level l2 = getlevel(s2, player);
@@ -422,7 +490,7 @@ public class Gobangpanel extends JPanel {
 			String s = "";
 			int x = chess.getX();
 			int y = chess.getY();
-			for (int i = 1; i <= 5; i++) {
+			for (int i = 1; i <= 4; i++) {
 				if (x + dx * i >= 0 && x + dx * i < Gobangutil.LINE_COUNT && y + dy * i >= 0
 						&& y + dy * i < Gobangutil.LINE_COUNT)
 					if (re) {
@@ -439,8 +507,10 @@ public class Gobangpanel extends JPanel {
 			if ((check(x, y, 1, 0, currentplayer) + check(x, y, -1, 0, currentplayer) + 1) > 4
 					|| (check(x, y, 0, 1, currentplayer) + check(x, y, 0, -1, currentplayer) + 1) > 4
 					|| (check(x, y, -1, 1, currentplayer) + check(x, y, 1, -1, currentplayer) + 1) > 4
-					|| (check(x, y, 1, 1, currentplayer) + check(x, y, -1, -1, currentplayer) + 1) > 4)
+					|| (check(x, y, 1, 1, currentplayer) + check(x, y, -1, -1, currentplayer) + 1) > 4) {
+				WIN=true;
 				return true;
+			}
 			else
 				return false;
 		}
@@ -461,15 +531,30 @@ public class Gobangpanel extends JPanel {
 
 	};
 
-	public void undo() {
+void undo() {
 		// 悔棋
 		chess tmp = getcurchess();
 		if (count > 1) {
+			if(mode==renrenMode){
 			currentplayer = chess1[tmp.getX()][tmp.getY()].getPlayer();
 			chess1[tmp.getX()][tmp.getY()].setPlayer(EMPTY);
 			chess1[tmp.getX()][tmp.getY()].setOrdernum(0);
 			count--;
 			repaint();
+			}else if(mode==renjimode)
+			{
+				currentplayer = chess1[tmp.getX()][tmp.getY()].getPlayer();
+				chess1[tmp.getX()][tmp.getY()].setPlayer(EMPTY);
+				chess1[tmp.getX()][tmp.getY()].setOrdernum(0);
+				count--;
+				currentplayer=3-currentplayer;
+				chess tmp1 = getcurchess();
+				currentplayer = chess1[tmp1.getX()][tmp1.getY()].getPlayer();
+				chess1[tmp1.getX()][tmp1.getY()].setPlayer(EMPTY);
+				chess1[tmp1.getX()][tmp1.getY()].setOrdernum(0);
+				count--;
+				repaint();
+			}
 		}
 	}
 
@@ -485,10 +570,31 @@ public class Gobangpanel extends JPanel {
 		count = 1;
 		currentplayer = 1;
 		// isGamestart=true;
+              if(canjumode==0) {}	
+               else if(canjumode==1) {		System.out.println("panduaning");
+				for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
+					for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
+						if (canjudata.build1[i][j] == 1) {
+							chess1[i][j].setPlayer(BLACK);
+							chess1[i][j].setOrdernum(count);
+							count++;
+						} else if (canjudata.build1[i][j] == 2) {
+							chess1[i][j].setPlayer(WHITE);
+							chess1[i][j].setOrdernum(count);
+							count++;
+                          }
+		}
+		
+		repaint();
+	}
+
+	public void setCanjumode(int canjumode) {
+		this.canjumode = canjumode;
 	}
 
 	public void setGamestart(boolean isGamestart) {
 		this.isGamestart = isGamestart;
+		WIN=false;
 	}
 
 	public void modechange(boolean bool) {
@@ -501,6 +607,7 @@ public class Gobangpanel extends JPanel {
 			chess1[Gobangutil.LINE_COUNT / 2][Gobangutil.LINE_COUNT / 2].setY(Gobangutil.LINE_COUNT / 2);
 			chess1[Gobangutil.LINE_COUNT / 2][Gobangutil.LINE_COUNT / 2].setOrdernum(1);
 			count++;
+			System.out.println("count"+count);
 			currentplayer = 3 - currentplayer;
 			repaint();
 		} else {

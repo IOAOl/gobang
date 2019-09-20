@@ -1,6 +1,6 @@
 package Gobang;
 
-public class chess implements Comparable<chess>{
+public class chess implements Comparable<chess> , Cloneable {
 	private int x;
 	private int y;
 	private int ordernum;
@@ -83,4 +83,14 @@ public class chess implements Comparable<chess>{
 	public int getEMPTY() {
 		return EMPTY;
 	}
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return (chess)super.clone();
+    }
+	@Override
+	public String toString() {
+		return "chess [x=" + x + ", y=" + y + ", ordernum=" + ordernum + ", player=" + player + ", EMPTY=" + EMPTY
+				+ ", offence=" + offence + ", attack=" + attack + ", sum=" + sum + "]";
+	}
+	
 }

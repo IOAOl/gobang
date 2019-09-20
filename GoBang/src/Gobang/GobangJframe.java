@@ -41,6 +41,7 @@ public class GobangJframe extends JFrame{
 	JRadioButton renji =new JRadioButton("人机");
 	JRadioButton guzhi =new JRadioButton("估值函数");
 	JRadioButton guzhitree =new JRadioButton("估值函数+搜索树");
+	JComboBox canjunum =new JComboBox<Integer>(new Integer[]{1,2,3});
 	
 	public void start() {
 		setTitle("五子棋");
@@ -105,6 +106,14 @@ public class GobangJframe extends JFrame{
 		panel6.add(newgame);
 		rightpanel.add(panel6);
 		
+		//残局
+		JPanel panel7=new JPanel();
+		panel7.add(new JLabel("残局"));
+		panel7.add(canjunum);
+		
+		rightpanel.add(panel7);
+		
+		
 		
 		add(rightpanel);
 		setResizable(false);
@@ -145,12 +154,17 @@ MouseAdapter mouselistener=new MouseAdapter() {
 		else if(newgame==obj){
 			System.out.println("newgame");
 			JOptionPane.showMessageDialog(GobangJframe.this, "Game start!");
-			//Gpannel.newset();
+			Gpannel.setCanjumode(canjunum.getSelectedIndex());
+			Gpannel.newset();
 			Gpannel.setGamestart(true);
 		}
 		else if(luoziorder==obj){
 			System.out.println("ordershowchange");
 			Gpannel.changeshoworder();
+		}
+		else if(canjunum==obj){
+			System.out.println("chanjumode");
+			Gpannel.setCanjumode(canjunum.getSelectedIndex());
 		}
 	}
 };
