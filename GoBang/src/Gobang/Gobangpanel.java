@@ -176,6 +176,7 @@ public class Gobangpanel extends JPanel {
 
 				}
 			}
+			
 			/*
 			 * for(int i=0;i<Gobangutil.LINE_COUNT;i++){ for(int
 			 * j=0;j<Gobangutil.LINE_COUNT;j++){
@@ -185,7 +186,8 @@ public class Gobangpanel extends JPanel {
 			 * } }
 			 */
 		}
-		return null;
+		 chess temp=new chess(0, 0, 0, 0);
+		return temp;
 	}
 
 	private void drawnum(Graphics2D g2d) {
@@ -310,6 +312,7 @@ public class Gobangpanel extends JPanel {
 						repaint();
 						JOptionPane.showMessageDialog(Gobangpanel.this,
 								((currentplayer == WHITE) ? "black" : "white") + "  win");
+						
 					}
 				} else if (mode == renjimode) {
 					// 人下棋
@@ -325,12 +328,12 @@ public class Gobangpanel extends JPanel {
 						if (iswin) {
 							repaint();
 							JOptionPane.showMessageDialog(Gobangpanel.this,
-									((currentplayer == WHITE) ? "black" : "white") + "  win");
+									("white"  + "  win"));
 						}
 						// 机器下棋
-						if (zhinengmode == guzhimode) {// 估值下棋
+						 if (zhinengmode == guzhimode&&!iswin) {// 估值下棋
 							List<chess> sortlist = sortchess(BLACK, chess1);
-							chess temp = sortlist.get(sortlist.size()-10);
+							chess temp = sortlist.get(sortlist.size()-1);
 							for(int i=0;i<sortlist.size();i++)
 							System.out.println(sortlist.get(i));
 							x = temp.getX();
@@ -338,14 +341,13 @@ public class Gobangpanel extends JPanel {
 							chess1[x][y].setPlayer(BLACK);
 							chess1[x][y].setOrdernum(count);
 							count++;
-							currentplayer=3-currentplayer;
+							//currentplayer=3-currentplayer;
 							Boolean iswin1 = checkwin(x, y, BLACK);
 							if (iswin1) {
 								repaint();
 								JOptionPane.showMessageDialog(Gobangpanel.this,
-										((currentplayer == WHITE) ? "black" : "white") + "  win");
+										("black" + "  win"));
 							}
-							
 						} else if (zhinengmode == guzhitreemode) {// 估值加搜索树
 							
 							
@@ -531,7 +533,7 @@ public class Gobangpanel extends JPanel {
 
 	};
 
-void undo() {
+	void undo() {
 		// 悔棋
 		chess tmp = getcurchess();
 		if (count > 1) {
@@ -570,21 +572,49 @@ void undo() {
 		count = 1;
 		currentplayer = 1;
 		// isGamestart=true;
-              if(canjumode==0) {}	
-               else if(canjumode==1) {		System.out.println("panduaning");
-				for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
-					for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
-						if (canjudata.build1[i][j] == 1) {
-							chess1[i][j].setPlayer(BLACK);
-							chess1[i][j].setOrdernum(count);
-							count++;
-						} else if (canjudata.build1[i][j] == 2) {
-							chess1[i][j].setPlayer(WHITE);
-							chess1[i][j].setOrdernum(count);
-							count++;
-                          }
+		if (canjumode == 0) {
+		} else if (canjumode == 1) {
+			System.out.println("panduaning");
+			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
+				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
+					if (canjudata.build1[j][i] == 1) {
+						chess1[i][j].setPlayer(BLACK);
+						chess1[i][j].setOrdernum(count);
+						count++;
+					} else if (canjudata.build1[j][i] == 2) {
+						chess1[i][j].setPlayer(WHITE);
+						chess1[i][j].setOrdernum(count);
+						count++;
+					}
+
+		} else if (canjumode == 2) {
+			System.out.println("panduaning");
+			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
+				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
+					if (canjudata.build2[j][i] == 1) {
+						chess1[i][j].setPlayer(BLACK);
+						chess1[i][j].setOrdernum(count);
+						count++;
+					} else if (canjudata.build2[j][i] == 2) {
+						chess1[i][j].setPlayer(WHITE);
+						chess1[i][j].setOrdernum(count);
+						count++;
+					}
 		}
-		
+		else if (canjumode == 3) {
+			System.out.println("panduaning");
+			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
+				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
+					if (canjudata.build3[j][i] == 1) {
+						chess1[i][j].setPlayer(BLACK);
+						chess1[i][j].setOrdernum(count);
+						count++;
+					} else if (canjudata.build3[j][i] == 2) {
+						chess1[i][j].setPlayer(WHITE);
+						chess1[i][j].setOrdernum(count);
+						count++;
+					}
+		}
 		repaint();
 	}
 
@@ -601,14 +631,8 @@ void undo() {
 		mode = bool;
 		if (mode == renjimode) {
 			newset();
-			System.out.println("static");
-			chess1[Gobangutil.LINE_COUNT / 2][Gobangutil.LINE_COUNT / 2].setPlayer(BLACK);
-			chess1[Gobangutil.LINE_COUNT / 2][Gobangutil.LINE_COUNT / 2].setX(Gobangutil.LINE_COUNT / 2);
-			chess1[Gobangutil.LINE_COUNT / 2][Gobangutil.LINE_COUNT / 2].setY(Gobangutil.LINE_COUNT / 2);
-			chess1[Gobangutil.LINE_COUNT / 2][Gobangutil.LINE_COUNT / 2].setOrdernum(1);
-			count++;
-			System.out.println("count"+count);
-			currentplayer = 3 - currentplayer;
+			System.out.println("count:"+count);
+			//currentplayer = 3 - currentplayer;
 			repaint();
 		} else {
 			newset();
