@@ -45,7 +45,7 @@ public class Gobangpanel extends JPanel {
 	private final boolean renrenMode = false;
 	private final boolean renjimode = true;
 	private boolean mode = false;
-	private int canjumode =0;  //残局模式
+	private int canjumode =0;  			//残局模式
 
 	// 智能
 	private final boolean guzhimode = false;
@@ -127,12 +127,14 @@ public class Gobangpanel extends JPanel {
 							g2d.setColor(Color.BLACK);
 						}
 						FontMetrics fm = g2d.getFontMetrics();
+						if(chess1[i][j].getOrdernum()!=0) {
 						String str = chess1[i][j].getOrdernum() + "";
 						int heigh = fm.getAscent();
 						int width = fm.stringWidth(str);
 						int x = chess1[i][j].getX() * Gobangutil.INTERVAL + Gobangutil.OFFSET - width / 2;
 						int y = chess1[i][j].getY() * Gobangutil.INTERVAL + Gobangutil.OFFSET + heigh / 2;
 						g2d.drawString(str, x, y);
+						}
 					}
 				}
 			}
@@ -316,6 +318,7 @@ public class Gobangpanel extends JPanel {
 					}
 				} else if (mode == renjimode) {
 					// 人下棋
+					Boolean orginnull =false;
 					x = (e.getX() - Gobangutil.OFFSET / 2) / Gobangutil.INTERVAL;
 					y = (e.getY() - Gobangutil.OFFSET / 2) / Gobangutil.INTERVAL;
 					if (x >= 0 & x < Gobangutil.LINE_COUNT && y >= 0 && y < Gobangutil.LINE_COUNT) {
@@ -323,6 +326,7 @@ public class Gobangpanel extends JPanel {
 							chess1[curx][cury].setOrdernum(count);
 							chess1[curx][cury].setPlayer(WHITE);
 							count++;
+							orginnull=true;
 						}
 						Boolean iswin = checkwin(x, y, WHITE);
 						if (iswin) {
@@ -331,7 +335,7 @@ public class Gobangpanel extends JPanel {
 									("white"  + "  win"));
 						}
 						// 机器下棋
-						 if (zhinengmode == guzhimode&&!iswin) {// 估值下棋
+						 if (zhinengmode == guzhimode&&!iswin&&orginnull) {// 估值下棋
 							List<chess> sortlist = sortchess(BLACK, chess1);
 							chess temp = sortlist.get(sortlist.size()-1);
 							for(int i=0;i<sortlist.size();i++)
@@ -579,12 +583,12 @@ public class Gobangpanel extends JPanel {
 				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
 					if (canjudata.build1[j][i] == 1) {
 						chess1[i][j].setPlayer(BLACK);
-						chess1[i][j].setOrdernum(count);
-						count++;
+						//chess1[i][j].setOrdernum(count);
+						//count++;
 					} else if (canjudata.build1[j][i] == 2) {
 						chess1[i][j].setPlayer(WHITE);
-						chess1[i][j].setOrdernum(count);
-						count++;
+						//chess1[i][j].setOrdernum(count);
+						//count++;
 					}
 
 		} else if (canjumode == 2) {
@@ -593,12 +597,12 @@ public class Gobangpanel extends JPanel {
 				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
 					if (canjudata.build2[j][i] == 1) {
 						chess1[i][j].setPlayer(BLACK);
-						chess1[i][j].setOrdernum(count);
-						count++;
+						//chess1[i][j].setOrdernum(count);
+						//count++;
 					} else if (canjudata.build2[j][i] == 2) {
 						chess1[i][j].setPlayer(WHITE);
-						chess1[i][j].setOrdernum(count);
-						count++;
+						//chess1[i][j].setOrdernum(count);
+						//count++;
 					}
 		}
 		else if (canjumode == 3) {
@@ -607,12 +611,26 @@ public class Gobangpanel extends JPanel {
 				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
 					if (canjudata.build3[j][i] == 1) {
 						chess1[i][j].setPlayer(BLACK);
-						chess1[i][j].setOrdernum(count);
-						count++;
+						//chess1[i][j].setOrdernum(count);
+						//count++;
 					} else if (canjudata.build3[j][i] == 2) {
 						chess1[i][j].setPlayer(WHITE);
-						chess1[i][j].setOrdernum(count);
-						count++;
+						//chess1[i][j].setOrdernum(count);
+						//count++;
+					}
+		}
+		else if (canjumode == 4) {
+			System.out.println("panduaning");
+			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
+				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
+					if (canjudata.build4[j][i] == 1) {
+						chess1[i][j].setPlayer(BLACK);
+						//chess1[i][j].setOrdernum(count);
+						//count++;
+					} else if (canjudata.build4[j][i] == 2) {
+						chess1[i][j].setPlayer(WHITE);
+						//chess1[i][j].setOrdernum(count);
+						//count++;
 					}
 		}
 		repaint();

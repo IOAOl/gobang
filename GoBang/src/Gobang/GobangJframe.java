@@ -110,7 +110,6 @@ public class GobangJframe extends JFrame{
 		JPanel panel7=new JPanel();
 		panel7.add(new JLabel("²Ð¾Ö"));
 		panel7.add(canjunum);
-		
 		rightpanel.add(panel7);
 		
 		
