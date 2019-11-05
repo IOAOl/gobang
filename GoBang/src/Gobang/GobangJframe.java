@@ -41,7 +41,7 @@ public class GobangJframe extends JFrame{
 	JRadioButton renji =new JRadioButton("人机");
 	JRadioButton guzhi =new JRadioButton("估值函数");
 	JRadioButton guzhitree =new JRadioButton("估值函数+搜索树");
-	JComboBox<Integer> canjunum =new JComboBox<Integer>(new Integer[]{0,1,2,3,4});
+	JComboBox<Integer> canjunum =new JComboBox<Integer>(new Integer[]{0,1,2,3,4,5,6,7,8});
 	
 	public void start() {
 		setTitle("五子棋");

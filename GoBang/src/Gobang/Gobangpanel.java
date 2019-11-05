@@ -575,64 +575,14 @@ public class Gobangpanel extends JPanel {
 		repaint();
 		count = 1;
 		currentplayer = 1;
-		// isGamestart=true;
-		if (canjumode == 0) {
-		} else if (canjumode == 1) {
-			System.out.println("panduaning");
-			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
+			int c=canjumode;
+			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)					//遍历得到的数组，将棋子添加棋盘上
 				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
-					if (canjudata.build1[j][i] == 1) {
+					if (canjudata.getCheckerboard(c)[j][i] == 1) {
 						chess1[i][j].setPlayer(BLACK);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					} else if (canjudata.build1[j][i] == 2) {
+					} else if (canjudata.getCheckerboard(c)[j][i] == 2) {
 						chess1[i][j].setPlayer(WHITE);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
 					}
-
-		} else if (canjumode == 2) {
-			System.out.println("panduaning");
-			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
-				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
-					if (canjudata.build2[j][i] == 1) {
-						chess1[i][j].setPlayer(BLACK);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					} else if (canjudata.build2[j][i] == 2) {
-						chess1[i][j].setPlayer(WHITE);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					}
-		}
-		else if (canjumode == 3) {
-			System.out.println("panduaning");
-			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
-				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
-					if (canjudata.build3[j][i] == 1) {
-						chess1[i][j].setPlayer(BLACK);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					} else if (canjudata.build3[j][i] == 2) {
-						chess1[i][j].setPlayer(WHITE);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					}
-		}
-		else if (canjumode == 4) {
-			System.out.println("panduaning");
-			for (int i = 0; i < Gobangutil.LINE_COUNT; i++)
-				for (int j = 0; j < Gobangutil.LINE_COUNT; j++)
-					if (canjudata.build4[j][i] == 1) {
-						chess1[i][j].setPlayer(BLACK);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					} else if (canjudata.build4[j][i] == 2) {
-						chess1[i][j].setPlayer(WHITE);
-						//chess1[i][j].setOrdernum(count);
-						//count++;
-					}
-		}
 		repaint();
 	}
 
